@@ -3,7 +3,12 @@
 import React, { useState, useEffect } from "react";
 
 export default function Home() {
-  const [deviceStatus, setDeviceStatus] = useState("Connected");
+  const [deviceStatus, setDeviceStatus] = useState("Online");
+  const [networkStatus, setNetworkStatus] = useState("Connected");
+  const [battery, setBattery] = useState(97);
+  const [cpuLoad, setCpuLoad] = useState(21);
+  const [gpuLoad, setGpuLoad] = useState(14);
+  const [temp, setTemp] = useState(36.2);
   const [lastAlert, setLastAlert] = useState("No active alerts");
   const [log, setLog] = useState<string[]>([
     "System boot complete.",
@@ -13,12 +18,8 @@ export default function Home() {
   ]);
   const [isStreaming, setIsStreaming] = useState(true);
   const [mood, setMood] = useState("neutral");
-  const [temp, setTemp] = useState(36.2);
-  const [cpuLoad, setCpuLoad] = useState(21);
-  const [battery, setBattery] = useState(97);
 
-  // Replace this with a real Google Drive video file ID
-  const videoFileId = "1A2B3C4D5E6F-example-file-id";
+  const videoFileId = "1A2B3C4D5E6F-example-file-id"; // Google Drive Video ID placeholder
 
   function pushLog(line: string) {
     const time = new Date().toLocaleTimeString();
@@ -50,90 +51,66 @@ export default function Home() {
     pushLog(`Playlist updated — mood: ${pick}`);
   }
 
-  // Simulate changing metrics
+  // Simulate dynamic system metrics
   useEffect(() => {
     const interval = setInterval(() => {
       setTemp((t) => 35 + Math.random() * 3);
       setCpuLoad(Math.floor(15 + Math.random() * 25));
+      setGpuLoad(Math.floor(10 + Math.random() * 30));
       setBattery((b) => (b > 5 ? b - Math.random() * 0.1 : 100));
     }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      {/* HEADER */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-5 px-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Guidelight AI – Control Panel</h1>
-            <p className="text-sm text-gray-500">
-              Empowering vision through intelligence.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">Device</span>
-            <div
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
-                deviceStatus === "Connected"
-                  ? "bg-green-200 text-green-900"
-                  : "bg-red-100 text-red-800"
-              }`}
-            >
-              {deviceStatus}
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-900 text-gray-200 flex">
+      {/* LEFT SIDEBAR */}
+      <aside className="w-60 bg-gray-800 p-4 flex flex-col">
+        <h1 className="text-xl font-bold text-teal-400 mb-8">Guidelight AI</h1>
+        <nav className="flex-1 space-y-4">
+          <a href="#" className="block px-3 py-2 rounded bg-gray-700 hover:bg-gray-600">Dashboard</a>
+          <a href="#" className="block px-3 py-2 rounded hover:bg-gray-700">AI Vision</a>
+          <a href="#" className="block px-3 py-2 rounded hover:bg-gray-700">Logs</a>
+          <a href="#" className="block px-3 py-2 rounded hover:bg-gray-700">Settings</a>
+        </nav>
 
-      {/* MAIN */}
-      <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT: Camera & Logs */}
+        <div className="mt-auto text-sm space-y-1">
+          <div><strong>Status:</strong> {deviceStatus}</div>
+          <div><strong>Network:</strong> {networkStatus}</div>
+          <div><strong>Battery:</strong> {battery.toFixed(0)}%</div>
+          <div><strong>CPU:</strong> {cpuLoad}%</div>
+          <div><strong>GPU:</strong> {gpuLoad}%</div>
+          <div><strong>Temp:</strong> {temp.toFixed(1)}°C</div>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* VIDEO FEEDS + CONTROLS */}
         <section className="lg:col-span-2 space-y-6">
-          {/* Live Video Section */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-start justify-between">
-              <h2 className="text-lg font-medium">Live Camera & Video Feed</h2>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={toggleStream}
-                  className="px-3 py-1.5 rounded bg-indigo-600 text-white text-sm"
-                >
-                  {isStreaming ? "Stop Stream" : "Start Stream"}
-                </button>
-                <button
-                  onClick={() => fakeSendCommand("Capture Frame")}
-                  className="px-3 py-1.5 rounded border text-sm"
-                >
-                  Capture
-                </button>
+          <div className="bg-gray-800 rounded-lg shadow p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Live Camera & AI Feed</h2>
+              <div className="flex gap-2">
+                <button onClick={toggleStream} className="px-3 py-1.5 bg-teal-500 rounded text-gray-900 text-sm">{isStreaming ? 'Stop Stream' : 'Start Stream'}</button>
+                <button onClick={() => fakeSendCommand("Capture Frame")} className="px-3 py-1.5 border rounded text-sm">Capture</button>
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Local camera feed */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Camera Feed */}
               <div className="aspect-video bg-gray-900 rounded overflow-hidden relative">
                 {isStreaming ? (
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="object-cover w-full h-full opacity-90"
-                  >
-                    <source src="/videos/livefeed.mp4" type="video/mp4" />
+                  <video autoPlay loop muted playsInline className="object-cover w-full h-full opacity-90">
+                    <source src="/videos/livefeed.mp4" type="video/mp4"/>
                   </video>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-300">
-                    Stream paused
-                  </div>
+                  <div className="flex items-center justify-center h-full text-gray-400">Stream paused</div>
                 )}
-                <div className="absolute top-3 left-3 bg-black/40 text-white px-2 py-1 text-xs rounded">
-                  Stereo Cameras (Raspberry Pi)
-                </div>
+                <div className="absolute top-2 left-2 bg-black/50 text-white px-2 py-1 text-xs rounded">Stereo Cameras</div>
               </div>
 
-              {/* Google Drive Feed */}
+              {/* Google Drive Video */}
               <div className="aspect-video bg-gray-900 rounded overflow-hidden">
                 <iframe
                   title="drive-video"
@@ -144,127 +121,60 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Control buttons */}
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => {
-                  playTestAlert();
-                  pushLog("Triggered test obstacle alert.");
-                }}
-                className="px-4 py-2 bg-amber-500 rounded text-white text-sm"
-              >
-                Test Obstacle Alert
-              </button>
-              <button
-                onClick={() => reshufflePlaylist()}
-                className="px-4 py-2 bg-emerald-600 rounded text-white text-sm"
-              >
-                Reshuffle Playlist
-              </button>
-              <button
-                onClick={() => fakeSendCommand("Send continuous frames")}
-                className="px-4 py-2 border rounded text-sm"
-              >
-                Start Continuous Frames
-              </button>
+            {/* CONTROL BUTTONS */}
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button onClick={playTestAlert} className="px-4 py-2 bg-amber-500 rounded text-gray-900 text-sm">Test Obstacle Alert</button>
+              <button onClick={reshufflePlaylist} className="px-4 py-2 bg-teal-500 rounded text-gray-900 text-sm">Reshuffle Playlist</button>
+              <button onClick={() => fakeSendCommand("Send continuous frames")} className="px-4 py-2 border rounded text-sm">Start Continuous Frames</button>
             </div>
           </div>
 
-          {/* Alerts and Logs */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-md font-medium">Current Alert</h3>
-            <p className="mt-2 text-sm text-gray-700">{lastAlert}</p>
+          {/* ALERTS & LOGS */}
+          <div className="bg-gray-800 rounded-lg shadow p-4">
+            <h3 className="font-semibold text-sm mb-2">Current Alert</h3>
+            <p className="text-gray-300">{lastAlert}</p>
 
-            <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-600 mb-2">
-                System Logs
-              </h4>
-              <div className="max-h-48 overflow-auto bg-gray-900 text-white p-3 rounded text-xs font-mono leading-relaxed">
-                {log.map((l, idx) => (
-                  <div key={idx} className="py-0.5">
-                    {l}
-                  </div>
-                ))}
-              </div>
+            <h4 className="font-semibold text-sm mt-4 mb-1">System Logs</h4>
+            <div className="max-h-48 overflow-auto bg-gray-900 p-3 rounded font-mono text-xs text-green-300">
+              {log.map((l, idx) => <div key={idx}>{l}</div>)}
             </div>
           </div>
         </section>
 
-        {/* RIGHT: Sidebar */}
+        {/* RIGHT SIDEBAR */}
         <aside className="space-y-6">
-          {/* Device Info */}
-          <div className="bg-white rounded-lg shadow p-4 text-sm">
-            <h4 className="font-medium mb-2">Device Status</h4>
-            <ul className="space-y-1 text-gray-700">
-              <li><strong>Pi:</strong> {deviceStatus}</li>
-              <li><strong>Object Detection:</strong> YOLOv5s (local)</li>
-              <li><strong>Backend:</strong> FastAPI + AWS Polly</li>
-              <li><strong>Voice Engine:</strong> Gemini API</li>
-              <li><strong>Spotify:</strong> Linked</li>
-              <li><strong>CPU Load:</strong> {cpuLoad}%</li>
-              <li><strong>Temperature:</strong> {temp.toFixed(1)}°C</li>
-              <li><strong>Battery:</strong> {battery.toFixed(0)}%</li>
-            </ul>
-          </div>
-
-          {/* Commands */}
-          <div className="bg-white rounded-lg shadow p-4 text-sm">
-            <h4 className="font-medium mb-2">Quick Commands</h4>
+          {/* QUICK COMMANDS */}
+          <div className="bg-gray-800 rounded-lg shadow p-4 text-sm">
+            <h4 className="font-semibold mb-2">Quick Commands</h4>
             <div className="grid gap-2">
-              <button
-                onClick={() => fakeSendCommand("Read text from image")}
-                className="w-full px-3 py-2 border rounded"
-              >
-                Read Text (OCR)
-              </button>
-              <button
-                onClick={() => fakeSendCommand("Describe scene")}
-                className="w-full px-3 py-2 border rounded"
-              >
-                Describe Scene
-              </button>
-              <button
-                onClick={() => fakeSendCommand("Shuffle upbeat playlist")}
-                className="w-full px-3 py-2 border rounded"
-              >
-                Shuffle Music
-              </button>
+              <button onClick={() => fakeSendCommand("Read text from image")} className="w-full px-3 py-2 border rounded">OCR Read</button>
+              <button onClick={() => fakeSendCommand("Describe scene")} className="w-full px-3 py-2 border rounded">Describe Scene</button>
+              <button onClick={() => fakeSendCommand("Shuffle upbeat playlist")} className="w-full px-3 py-2 border rounded">Shuffle Music</button>
             </div>
           </div>
 
-          {/* Mood */}
-          <div className="bg-white rounded-lg shadow p-4 text-sm">
-            <h4 className="font-medium mb-2">Current Mood</h4>
+          {/* MOOD & PLAYLIST */}
+          <div className="bg-gray-800 rounded-lg shadow p-4 text-sm">
+            <h4 className="font-semibold mb-2">Current Mood</h4>
             <div className="flex items-center gap-3">
-              <div className="px-3 py-2 rounded bg-gray-100 font-medium">
-                {mood}
-              </div>
-              <button
-                onClick={() => reshufflePlaylist()}
-                className="px-3 py-1.5 bg-indigo-600 text-white rounded text-sm"
-              >
-                Auto Reshuffle
-              </button>
+              <div className="px-3 py-2 bg-gray-900 rounded font-medium">{mood}</div>
+              <button onClick={reshufflePlaylist} className="px-3 py-1.5 bg-teal-500 text-gray-900 rounded text-sm">Auto Reshuffle</button>
             </div>
           </div>
 
-          {/* Info */}
-          <div className="bg-white rounded-lg shadow p-4 text-sm">
-            <h4 className="font-medium">Project Info</h4>
-            <p className="mt-2 text-gray-600 leading-relaxed">
-              <strong>Guidelight AI</strong> integrates Raspberry Pi, AWS Polly,
-              and Gemini APIs to assist visually impaired users by providing
-              real-time object detection, scene description, and music control.
+          {/* PROJECT INFO */}
+          <div className="bg-gray-800 rounded-lg shadow p-4 text-sm">
+            <h4 className="font-semibold mb-2">Project Info</h4>
+            <p className="text-gray-300 text-xs leading-relaxed">
+              <strong>Guidelight AI</strong> integrates Raspberry Pi, AWS Polly, Gemini APIs, and object detection to assist visually impaired users with real-time scene understanding, voice guidance, and music control.
             </p>
           </div>
         </aside>
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t bg-white">
-        <div className="max-w-7xl py-4 px-6 text-xs text-gray-500 text-center">
-          2025 © Guidelight AI | Built with ❤️ by Team DPS Jodhpur
-        </div>
+      <footer className="absolute bottom-0 w-full border-t border-gray-700 bg-gray-900 py-2 text-xs text-gray-500 text-center">
+        2025 © Guidelight AI | Built with ❤️ by Team DPS Jodhpur
       </footer>
     </div>
   );
