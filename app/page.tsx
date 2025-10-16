@@ -19,7 +19,7 @@ export default function Home() {
   const [isStreaming, setIsStreaming] = useState(true);
   const [mood, setMood] = useState("neutral");
 
-  const videoFileId = "1A2B3C4D5E6F-example-file-id"; // Google Drive Video ID placeholder
+  const videoFileId = "1d0HjqyqUROEr91JgC5JH-oYm96_PQAz_"; // Google Drive Video ID placeholder
 
   function pushLog(line: string) {
     const time = new Date().toLocaleTimeString();
